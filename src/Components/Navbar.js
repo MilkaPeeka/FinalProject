@@ -7,11 +7,8 @@ const Navbar = (props) => {
     const isLoggedIn = ctx.isLoggedIn;
     const isInDarkMode = ctx.isInDarkMode;
 
-    console.log(isLoggedIn, isInDarkMode);
-
-
     return (
-        <div className={`${style.nav} ${isInDarkMode ? style.dark : ''}`}>
+    <div className={`${style.nav} ${isInDarkMode ? style.dark : ''}`}>
             <p>APPLOGO </p>
 
             <p>homepage</p>

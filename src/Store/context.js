@@ -14,11 +14,8 @@ export const SiteContextProvider = (props) => {
 
     // on initial render we will want to fetch the state of both being logged in and dark mode
     useEffect(() => {
-        if (localStorage.getItem('isLoggedIn'))
-            setLoggedIn(true);
-
-        if (localStorage.getItem('isDarkMode'))
-            setDarkMode(true);
+        setLoggedIn(localStorage.getItem('isLoggedIn') === '1');
+        setDarkMode(localStorage.getItem('isDarkMode') === '1');
 
     }, []);
 
@@ -26,19 +23,19 @@ export const SiteContextProvider = (props) => {
     // handle dark mode toggling
     const onToggle = () => {
         setDarkMode((prevState) => {
-            localStorage.setItem('isDarkMode', !prevState);
+            localStorage.setItem('isDarkMode', !prevState ? '1' : '0');
             return !prevState;
         });
     }
 
     // handle log out and log in
     const logoutHandler = () => {
-        localStorage.setItem('isLoggedIn', false);
+        localStorage.setItem('isLoggedIn', '0');
         setLoggedIn(false);
       };
     
       const loginHandler = () => {
-        localStorage.setItem('isLoggedIn', true);
+        localStorage.setItem('isLoggedIn', '1');
         setLoggedIn(true);
       };
 
