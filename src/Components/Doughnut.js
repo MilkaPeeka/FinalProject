@@ -27,7 +27,7 @@ const CustomDoughnut = (props)=> {
   props.items.forEach((item) => {
     labels.push(item.label);
     values.push(item.value);
-    backgroundColor.push(hexToRGB(item.color, 0.2));
+    backgroundColor.push(hexToRGB(item.color, 0.5));
     borderColor.push(hexToRGB(item.color, 1));
   });
 

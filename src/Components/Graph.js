@@ -85,7 +85,7 @@ const CustomGraph = (props) => {
         console.log(item);
         labels.push(item.label);
         values.push(item.value);
-        backgroundColor.push(matchColorToPrecentage(+item.value, 0.2))
+        backgroundColor.push(matchColorToPrecentage(+item.value, 0.5))
         borderColor.push(matchColorToPrecentage(+item.value, 1))
     });
     

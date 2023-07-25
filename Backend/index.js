@@ -6,6 +6,7 @@ TODO:
 4. authentication user Bearer
 5. learn more about mongo caching
 6. adding indexes?
+7. params vs query (i.e: rakams/get_by_gdud/80 OR rakams/get_by_gdud?gdud=80)
 */
 
 
@@ -18,14 +19,14 @@ const app = express();
 
 app.use(bp.urlencoded({extended: true}));
 
-const User = mongoose.model('User', {
-    pernum: String,
+const User = mongoose.model('User', mongoose.Schema({
+    pernum: {type: String, unique: true},
     gdud: String,
     isManager: Boolean
-})
+}));
 
 const carData = mongoose.model('carData', {
-    carNumber: String,
+    carNumber: {type: String, unique: true},
     makat: String,
     kshirot: Boolean,
     gdud: String
@@ -106,7 +107,7 @@ app.get('/api/users/get_by_pernum/:pernum', async (req,res) => {
 app.post('/api/rakams/add/', async (req, res) => {
   const { carNumber, makat, kshirot, gdud } = req.body;
 
-  if (!carNumber || !makat || typeof kshirot !== 'boolean' || !gdud) 
+  if (!carNumber || !makat || kshirot === undefined || !gdud) 
     res.json({error: true, error_message: 'One or more fields are invalid'});
 
   else {
