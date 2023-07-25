@@ -14,26 +14,85 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const express = require('express');
 const bp = require('body-parser');
-
+const passport = require('passport');
+const session = require('express-session');
+const LocalStrategy = require('passport-local').Strategy;
 const app = express();
 
 app.use(bp.urlencoded({extended: true}));
+app.use(session({
+  secret: process.env.SESS_SECRET,
+  resave: false,
+  saveUninitialized: true,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 const User = mongoose.model('User', mongoose.Schema({
-    pernum: {type: String, unique: true},
-    gdud: String,
-    isManager: Boolean
+  pernum: {type: String, unique: true},
+  gdud: String,
+  isManager: Boolean
 }));
 
 const carData = mongoose.model('carData', {
-    carNumber: {type: String, unique: true},
-    makat: String,
-    kshirot: Boolean,
-    gdud: String
+  carNumber: {type: String, unique: true},
+  makat: String,
+  kshirot: Boolean,
+  gdud: String
 }, 'carDatas');
 
 
 
+passport.use('local',new LocalStrategy({usernameField: 'pernum', passwordField: 'pernum'},
+    (pernum, password, done) => {
+      User.findOne({ pernum })
+      .then(user => {
+        done(null, user);
+      })
+      .catch(err => {
+        console.log(err);
+        return done(err, null);
+      });
+    }
+  )
+);
+
+passport.serializeUser(function(user, cb) {
+  cb(null, user.id);
+});
+
+passport.deserializeUser((userID, done) => {
+  User.findById(userID)
+  .then(user => {
+    done(null, user);
+  })
+  .catch(err => {
+    console.log(err);
+    return done(err, null);
+  });
+});
+
+
+app.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    req.logIn(user, (err) => {
+      if (err) {
+        return res.status(500).json({ message: 'Login failed' });
+      }
+      return res.status(200).json({ message: 'Login successful', user });
+    });
+  })(req, res, next);
+});
+
+app.get('/isLoggedIn', (req, res) => {
+  res.json({loggedIn: req.isAuthenticated()});
+});
 
 
 // const main = async () => {
