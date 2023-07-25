@@ -9,15 +9,9 @@ const SiteContext = createContext({
 });
 
 export const SiteContextProvider = (props) => {
-    const [isLoggedIn, setLoggedIn] = useState(false);
-    const [isInDarkMode, setDarkMode] = useState(false);
-
     // on initial render we will want to fetch the state of both being logged in and dark mode
-    useEffect(() => {
-        setLoggedIn(localStorage.getItem('isLoggedIn') === '1');
-        setDarkMode(localStorage.getItem('isDarkMode') === '1');
-
-    }, []);
+    const [isLoggedIn, setLoggedIn] = useState(localStorage.getItem('isLoggedIn') === '1');
+    const [isInDarkMode, setDarkMode] = useState(localStorage.getItem('isDarkMode') === '1');
 
 
     // handle dark mode toggling

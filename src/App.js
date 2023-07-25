@@ -4,25 +4,13 @@ import CustomGraph from './Components/Graph';
 import Navbar from './Components/Navbar';
 import AddRakamPage from './Components/AddRakamPage';
 import {SiteContextProvider} from './Store/context';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import createCache from '@emotion/cache';
-import { CacheProvider } from '@emotion/react';
-import rtlPlugin from 'stylis-plugin-rtl';
-import { prefixer } from 'stylis';
-
+import RTLWrapper from './RTLWrapper';
 
 function App() {
-  const theme = createTheme({
-    direction: 'rtl',
-  });
-  const cacheRtl = createCache({
-    key: 'muirtl',
-    stylisPlugins: [prefixer, rtlPlugin],
-  });
+
   return (
-    <CacheProvider value={cacheRtl}>
-      <ThemeProvider theme={theme}>
-        <SiteContextProvider>
+    <SiteContextProvider>
+    <RTLWrapper>
       <Navbar />  
       {/* <CustomDoughnut items={[{
         color: "#46B1C9",
@@ -57,10 +45,8 @@ function App() {
 
     {/* <RakamQueryResult /> */}
     <AddRakamPage />
-        </SiteContextProvider>
-      </ThemeProvider>
-    </CacheProvider>
-
+    </RTLWrapper>
+    </SiteContextProvider>
   );
 }
 

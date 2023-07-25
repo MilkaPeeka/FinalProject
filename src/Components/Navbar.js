@@ -9,16 +9,22 @@ import { AppBar,
     ToggleButtonGroup,
     ToggleButton 
 } from '@mui/material';
+import ModeNightIcon from '@mui/icons-material/ModeNight';
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import SchoolIcon from '@mui/icons-material/School';
 const Navbar = (props) => {
     const ctx = useContext(SiteContext);
-    const [alignment, setAlignment] = useState('web');
-
-    const handleChange = (event, newAlignment) => {
-      setAlignment(newAlignment);
-    };
     const isLoggedIn = ctx.isLoggedIn;
     const isInDarkMode = ctx.isInDarkMode;
+    console.log(isInDarkMode);
+    const [alignment, setAlignment] = useState(isInDarkMode ? 'moon' : 'sun');
+
+    const handleChange = (event, newAlignment) => {
+        if (newAlignment !== null) {
+        setAlignment(newAlignment);
+        ctx.onDarkModeToggle();
+        }
+    };
 
     return (
     <AppBar position='static'>
@@ -30,14 +36,14 @@ const Navbar = (props) => {
             <Button color='inherit'>הוספת רקמ</Button>
             <Button color='inherit'>התנתקות</Button>
             <ToggleButtonGroup
-                color="secondary"
+                color="primary"
                 value={alignment}
                 exclusive
                 onChange={handleChange}
                 aria-label="Platform"
                 >
-                <ToggleButton value="web">Web</ToggleButton>
-                <ToggleButton value="android">Android</ToggleButton>
+                <ToggleButton value="sun" sx={{color: 'white'}}><WbSunnyIcon/></ToggleButton>
+                <ToggleButton value="moon" sx={{color: 'white'}}><ModeNightIcon color='white'/></ToggleButton>
             </ToggleButtonGroup>
             </Stack>
         </Toolbar>

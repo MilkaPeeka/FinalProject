@@ -64,9 +64,7 @@ const RakamQueryResult = (props) => {
 
     return (
         <Stack spacing={2} sx={stackStyle}>
-            {isFound || notFoundHTML}
-            {isFound && foundHTML}
-            
+            {isFound ? foundHTML : notFoundHTML}
         </Stack>
     );
 
