@@ -3,9 +3,13 @@ import { createContext, useEffect, useState } from 'react';
 const SiteContext = createContext({
     isLoggedIn: false,
     isInDarkMode: false,
+    isManager: false,
+    sessionID: null,
+    pernum: null,
     onDarkModeToggle: () => {},
     onLogOut: () => {},
     onLogIn: () => {},
+    onAddRakam: () => {},
 });
 
 export const SiteContextProvider = (props) => {

@@ -2,11 +2,8 @@ import { FormControlLabel,
     FormGroup,
     FormLabel,
     Button, 
-    Stack,
     TextField, 
-    Checkbox, 
     Card,
-    Typography
     } from "@mui/material";
 
 
@@ -23,7 +20,8 @@ import { FormControlLabel,
                 mt: 3,
                 mx: 3,
                 flexBasis: 0, 
-                flexGrow: 1
+                flexGrow: 1,
+                boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.3)', // Optional shadow effect
                 }}>
                 <FormGroup sx= {{
                     marginBottom: 3
@@ -36,14 +34,14 @@ import { FormControlLabel,
                     marginBottom: 3
                 }}>                
                 
-                <FormLabel>הכנס מספר סידורי כללי של רקמ</FormLabel>
-                    <TextField variant="outlined" label="מספר גדוד"/>
+                <FormLabel>הכנס מקט רקמ</FormLabel>
+                    <TextField variant="outlined" label="מקט רקמ"/>
                 </FormGroup>
 
                 <FormGroup sx= {{
                     marginBottom: 3
-                }}>                <FormLabel>הכנס מזהה ייחודי של רקמ</FormLabel>
-                    <TextField variant="outlined" label="מספר גדוד"/>
+                }}>                <FormLabel>הכנס מספר ייחודי של רקמ</FormLabel>
+                    <TextField variant="outlined" label="מספר ייחודי"/>
                 </FormGroup>
 
                 <Button variant="contained">הוסף רקמ למערכת!</Button>

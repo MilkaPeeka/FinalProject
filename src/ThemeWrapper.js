@@ -3,10 +3,15 @@ import createCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
 import rtlPlugin from 'stylis-plugin-rtl';
 import { prefixer } from 'stylis';
-
-const RTLWrapper = (props) => {
+import { useContext } from 'react';
+import SiteContext from './Store/context';
+const ThemeWrapper = (props) => {
+    const ctx = useContext(SiteContext);
     const theme = createTheme({
         direction: 'rtl',
+        palette: {
+            mode: ctx.isInDarkMode ? 'dark' : 'light'
+        }
       });
       const cacheRtl = createCache({
         key: 'muirtl',
@@ -24,4 +29,4 @@ const RTLWrapper = (props) => {
 }
 
 
-export default RTLWrapper;
+export default ThemeWrapper;

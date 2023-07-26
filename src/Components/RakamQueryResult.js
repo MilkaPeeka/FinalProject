@@ -29,6 +29,7 @@ const RakamQueryResult = (props) => {
         bgcolor: isFound ? 'lightgreen' : 'salmon',
         textAlign: 'center',
         alignItems: 'center', // Center items vertically
+        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.3)', // Optional shadow effect
 
     };
 
@@ -58,7 +59,7 @@ const RakamQueryResult = (props) => {
     const foundHTML = (
         <>
             <Typography variant='h4' color={'white'} mt={5}>רקמ נמצא בגדוד!</Typography>
-
+            <Typography>נוסיף לוגו שיראה כמה שמישים, באחוזים וכמותי</Typography>
         </>
     );
 

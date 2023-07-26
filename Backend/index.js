@@ -196,8 +196,10 @@ app.get('/api/users/get_by_pernum/:pernum',authenticateMiddleware, async (req,re
 
 
 app.post('/api/rakams/add/',authenticateMiddleware, async (req, res) => {
-  if (!req.user.isManager)
+  if (!req.user.isManager){
     res.json({error: true, error_message: 'Unauthorized to add new rakams'});
+    return;
+  }
   const { carNumber, makat, kshirot, gdud } = req.body;
 
   if (!carNumber || !makat || kshirot === undefined || !gdud) 

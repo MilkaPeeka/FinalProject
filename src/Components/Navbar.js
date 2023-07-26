@@ -36,7 +36,7 @@ const Navbar = (props) => {
             <Button color='inherit'>הוספת רקמ</Button>
             <Button color='inherit'>התנתקות</Button>
             <ToggleButtonGroup
-                color="primary"
+                color="secondary"
                 value={alignment}
                 exclusive
                 onChange={handleChange}
