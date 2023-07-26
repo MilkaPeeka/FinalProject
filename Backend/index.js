@@ -65,12 +65,12 @@ passport.use('local',new LocalStrategy({usernameField: 'pernum', passwordField: 
 
 passport.serializeUser(function(user, cb) {
   console.log('serializing user: ', user);
-  cb(null, user.id);
+  cb(null, {id: user.id, isManager: user.isManager});
 });
 
-passport.deserializeUser((userID, done) => {
-  console.log('deserializing user: ', userID);
-  User.findById(userID)
+passport.deserializeUser((user, done) => {
+  console.log('deserializing user: ', user.id);
+  User.findById(user.id)
   .then(user => {
     done(null, user);
   })
@@ -196,6 +196,8 @@ app.get('/api/users/get_by_pernum/:pernum',authenticateMiddleware, async (req,re
 
 
 app.post('/api/rakams/add/',authenticateMiddleware, async (req, res) => {
+  if (!req.user.isManager)
+    res.json({error: true, error_message: 'Unauthorized to add new rakams'});
   const { carNumber, makat, kshirot, gdud } = req.body;
 
   if (!carNumber || !makat || kshirot === undefined || !gdud) 
