@@ -170,7 +170,6 @@ app.get('/api/logout', (req, res) => {
 app.get('/api/rakams/get_by_gdud_and_makat/:gdud/:makat',authenticateMiddleware, async (req, res) => {
   const makat = req.params.makat;
   const gdud = req.params.gdud;
-
   try {
     const queryResult = await carData.find({
       makat: makat,
@@ -188,7 +187,6 @@ app.get('/api/rakams/get_by_gdud_and_makat/:gdud/:makat',authenticateMiddleware,
 
 app.get('/api/rakams/get_by_gdud/:gdud',authenticateMiddleware, async (req, res) => {
   const gdud = req.params.gdud;
-
   try {
     const queryResult = await carData.find({
       gdud: gdud

@@ -1,11 +1,16 @@
 import { createContext, useEffect, useState } from 'react';
 
+const defaultUserData = {
+    gdud: '',
+    isManager: false,
+    pernum: '',
+};
 const SiteContext = createContext({
     isLoggedIn: false,
     isInDarkMode: false,
-    isManager: false,
-    pernum: null,
-    gdud: null,
+    isLoading: false,
+    serverError: '',
+    userData : defaultUserData,
     onDarkModeToggle: () => {},
     onLogOut: () => {},
     onLogIn: (pernum) => {},
@@ -16,28 +21,19 @@ export const SiteContextProvider = (props) => {
     // on initial render we will want to fetch the state of both being logged in and dark mode
     const [isLoggedIn, setLoggedIn] = useState(false);
     const [isInDarkMode, setDarkMode] = useState(false);
-    const [isManager, setManager] = useState(null);
-    const [gdud, setGdud] = useState(null);
-    const [pernum, setPernum] = useState(null);
-
-    console.log('user data: ', pernum, gdud, isManager);
-    // handle dark mode toggling
-    const onToggle = () => {
-        setDarkMode((prevState) => {
-            localStorage.setItem('isDarkMode', !prevState ? '1' : '0');
-            return !prevState;
-        });
-    }
-
-    // handle log out and log in
-    const logoutHandler = () => {
-        localStorage.setItem('isLoggedIn', '0');
-        setLoggedIn(false);
-      };
+    const [isLoading, setIsLoading] = useState(false);
+    const [userData, setUserData] = useState({
+        gdud: '',
+        isManager: false,
+        pernum: '',
+    });
+    const [serverError, setServerError] = useState('');
 
     useEffect(() => {
+        setIsLoading(true);
         fetch('/api/isLoggedIn', {credentials: "include",})
         .then(resp => {
+            setIsLoading(false);
             if (!resp.ok){
                 throw new Error("resp not okay");
             }
@@ -49,9 +45,7 @@ export const SiteContextProvider = (props) => {
                 }
 
                 if (result.user){
-                    setManager(result.user.isManager);
-                    setGdud(result.user.gdud);
-                    setPernum(result.user.pernum);
+                    setUserData(result.user);
                     setLoggedIn(true);
                 }
 
@@ -66,55 +60,81 @@ export const SiteContextProvider = (props) => {
             console.log("error on checking if signed in:", err);
         })
     }, []);
-    
-    const loginHandler = (pernum) => {
-        const logIn = async (pernum) => {
-            try {
-                const result = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({pernum})
-                    });
+    // handle dark mode toggling
+    const onToggle = () => {
+        setDarkMode((prevState) => {
+            localStorage.setItem('isDarkMode', !prevState ? '1' : '0');
+            return !prevState;
+        });
+    }
 
-
-                if (!result.ok){
-                    throw new Error('Didnt get right result code');
-                }
-                const data = await result.json();
-                if (data.error){
-                    throw new Error(data.error_message);
-                }
-                console.log(data);
-                setManager(data.user.isManager);
-                setGdud(data.user.gdud);
-                setPernum(data.user.pernum);
-                setLoggedIn(true);
+    // handle log out and log in
+    const logoutHandler = () => {
+        fetch('/api/logout', {credentials: "include",})
+        .then(resp => {
+            if (!resp.ok){
+                throw new Error("resp not okay");
             }
 
-            catch (err){
-                console.log("ERROR: ", err);
-                return;
-            }
+            resp.json()
+            .then(result => {
+                if (result.error){
+                    throw new Error(result.error_message);
+                }
+                else {
+                    setUserData(defaultUserData);
+                    setLoggedIn(false);
+                }
+            })
 
+            .catch(err => {console.log("error on parsing signout:", err)});
+        })
+        .catch(err => {
+            console.log("error on signing out:", err);
+        })
+      };
+
+    const loginHandler = async (pernum) => {
+        setIsLoading(true);
+        try {
+            const result = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({pernum})
+                });
+
+            if (!result.ok){
+                throw new Error('Didnt get right result code');
+            }
+            const data = await result.json();
+            if (data.error){
+                throw new Error(data.error_message);
+            }
+            setUserData(data.user);
+            setServerError('');
+            setLoggedIn(true);
         }
+        catch (err){
+            console.log("ERROR: ", err);
+            setServerError('התחברות נכשלה. אנא וודא שהכנסת מספר אישי נכון');
+        }
+        setIsLoading(false);
 
-    logIn(pernum);
     };
-
-
+    
     return (
         <SiteContext.Provider
             value={{
                 isLoggedIn: isLoggedIn,
                 isInDarkMode: isInDarkMode,
-                isManager: isManager,
-                pernum: null,
-                gdud: null,
-                onDarkModeToggle: () => onToggle,
-                onLogOut: () => logoutHandler,
-                onLogIn: (pernum) => loginHandler(pernum),
+                userData: userData,
+                isLoading: isLoading,
+                serverError: serverError,
+                onDarkModeToggle: onToggle,
+                onLogOut: logoutHandler,
+                onLogIn: loginHandler,
                 onAddRakam: () => {},
             }}>
             {props.children}

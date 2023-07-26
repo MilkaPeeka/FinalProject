@@ -14,6 +14,7 @@ import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import SchoolIcon from '@mui/icons-material/School';
 const Navbar = (props) => {
     const ctx = useContext(SiteContext);
+    const isManager = ctx.userData.isManager;
     const isLoggedIn = ctx.isLoggedIn;
     const isInDarkMode = ctx.isInDarkMode;
     const [alignment, setAlignment] = useState(isInDarkMode ? 'moon' : 'sun');
@@ -24,7 +25,6 @@ const Navbar = (props) => {
         ctx.onDarkModeToggle();
         }
     };
-
     return (
     <AppBar position='static'>
         <Toolbar sx={{flexGrow: 1}}>
@@ -32,8 +32,8 @@ const Navbar = (props) => {
             <Typography variant='h6' component='div'>בזק בקטן</Typography>
             <Stack direction='row' spacing={2}>
             <Button color='inherit'>לוח מידע</Button>
-            <Button color='inherit'>הוספת רקמ</Button>
-            <Button color='inherit'>התנתקות</Button>
+            {isManager && <Button color='inherit'>הוספת רקמ</Button>}
+            {isLoggedIn && <Button color='inherit' onClick={ctx.onLogOut}>התנתקות</Button>}
             <ToggleButtonGroup
                 color="secondary"
                 value={alignment}

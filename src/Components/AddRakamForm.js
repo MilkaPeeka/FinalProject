@@ -9,7 +9,18 @@ import { FormControlLabel,
 
 
     const AddRakamForm = (props) => {
+
+        const onChangeHandler = (event) => {
+            props.onMakatChange(event.target.value);
+        };
         
+        const onSubmit = (event) => {
+            event.preventDefault();
+
+            
+            props.onValidSubmit();
+        }
+
         return (
             /*
             setting data here means that THIS IS STYLING ABOUT THE FORM, not its children
@@ -26,8 +37,8 @@ import { FormControlLabel,
                 <FormGroup sx= {{
                     marginBottom: 3
                 }}>
-                    <FormLabel>הכנס מספר גדוד</FormLabel>
-                    <TextField variant="outlined" label="מספר גדוד"/>
+                    <FormLabel>מספר גדוד</FormLabel>
+                    <TextField variant="outlined" disabled value={props.gdud}/>
                 </FormGroup>
 
                 <FormGroup sx= {{
@@ -35,7 +46,7 @@ import { FormControlLabel,
                 }}>                
                 
                 <FormLabel>הכנס מקט רקמ</FormLabel>
-                    <TextField variant="outlined" label="מקט רקמ"/>
+                    <TextField variant="outlined" label="מקט רקמ" onChange={onChangeHandler}/>
                 </FormGroup>
 
                 <FormGroup sx= {{
@@ -44,7 +55,7 @@ import { FormControlLabel,
                     <TextField variant="outlined" label="מספר ייחודי"/>
                 </FormGroup>
 
-                <Button variant="contained">הוסף רקמ למערכת!</Button>
+                <Button variant="contained" type="submit">הוסף רקמ למערכת!</Button>
                 
             </Card>  
 
