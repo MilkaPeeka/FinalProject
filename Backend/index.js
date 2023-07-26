@@ -17,13 +17,19 @@ const bp = require('body-parser');
 const passport = require('passport');
 const session = require('express-session');
 const LocalStrategy = require('passport-local').Strategy;
+const MongoDBStore = require('connect-mongodb-session')(session);
 const app = express();
-
+const store = MongoDBStore({
+  uri: "mongodb+srv://Yuval:" +process.env.DB_PASSWORD +"@cluster0.dcwwtsq.mongodb.net/ProjectDummyData",
+  collection: 'BarakSessions', // Collection name for storing sessions in MongoDB
+  expires: 1000 * 60 * 60 * 24, // Session expiration time (in milliseconds) - 1 day in this example
+});
 app.use(bp.urlencoded({extended: true}));
 app.use(session({
   secret: process.env.SESS_SECRET,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
+  store
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -58,10 +64,12 @@ passport.use('local',new LocalStrategy({usernameField: 'pernum', passwordField: 
 );
 
 passport.serializeUser(function(user, cb) {
+  console.log('serializing user: ', user);
   cb(null, user.id);
 });
 
 passport.deserializeUser((userID, done) => {
+  console.log('deserializing user: ', userID);
   User.findById(userID)
   .then(user => {
     done(null, user);
@@ -72,26 +80,41 @@ passport.deserializeUser((userID, done) => {
   });
 });
 
+const authenticateMiddleware = (req, res, next) => {
+  // Use passport's built-in isAuthenticated method to check if the user is authenticated
+  if (req.isAuthenticated()) {
+    // If the user is authenticated, continue to the next middleware or route handler
+    return next();
+  } else {
+    // If the user is not authenticated, respond with a 401 Unauthorized status
+    return res.status(401).json({ error: true, error_message: 'UnAuthenticated' });
+  }
+};
 
 app.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) {
-      return res.status(500).json({ message: 'Internal server error' });
+      return res.status(500).json({ error: true, error_message: 'Internal server error' });
     }
     if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ error: true, error_message: 'Invalid credentials' });
     }
     req.logIn(user, (err) => {
       if (err) {
-        return res.status(500).json({ message: 'Login failed' });
+        return res.status(500).json({ error_message: 'Login failed' });
       }
-      return res.status(200).json({ message: 'Login successful', user });
+      return res.status(200).json({ error: false, message: 'Login successful', user });
     });
   })(req, res, next);
 });
 
-app.get('/isLoggedIn', (req, res) => {
-  res.json({loggedIn: req.isAuthenticated()});
+app.get('/isLoggedIn', (req, res, next) => {
+  if (req.isAuthenticated()){
+    res.json({error: false, auth: true});
+  }
+  else {
+    res.json({error: true, error_meesage: 'UnAuthenticated'})
+  }
 });
 
 
@@ -111,7 +134,7 @@ app.get('/isLoggedIn', (req, res) => {
 //     mongoose.connection.close();
 //   });
 
-app.get('/api/rakams/get_by_gdud_and_makat/:gdud/:makat', async (req, res) => {
+app.get('/api/rakams/get_by_gdud_and_makat/:gdud/:makat',authenticateMiddleware, async (req, res) => {
   const makat = req.params.makat;
   const gdud = req.params.gdud;
 
@@ -130,7 +153,7 @@ app.get('/api/rakams/get_by_gdud_and_makat/:gdud/:makat', async (req, res) => {
 
 });
 
-app.get('/api/rakams/get_by_gdud/:gdud', async (req, res) => {
+app.get('/api/rakams/get_by_gdud/:gdud',authenticateMiddleware, async (req, res) => {
   const gdud = req.params.gdud;
 
   try {
@@ -148,7 +171,7 @@ app.get('/api/rakams/get_by_gdud/:gdud', async (req, res) => {
 });
 
 
-app.get('/api/users/get_by_pernum/:pernum', async (req,res) => {
+app.get('/api/users/get_by_pernum/:pernum',authenticateMiddleware, async (req,res) => {
   const pernum = req.params.pernum;
 
   try {
@@ -163,7 +186,7 @@ app.get('/api/users/get_by_pernum/:pernum', async (req,res) => {
 });
 
 
-app.post('/api/rakams/add/', async (req, res) => {
+app.post('/api/rakams/add/',authenticateMiddleware, async (req, res) => {
   const { carNumber, makat, kshirot, gdud } = req.body;
 
   if (!carNumber || !makat || kshirot === undefined || !gdud) 
