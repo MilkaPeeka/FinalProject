@@ -36,12 +36,38 @@ export const SiteContextProvider = (props) => {
       };
 
     useEffect(() => {
+        fetch('/api/isLoggedIn', {credentials: "include",})
+        .then(resp => {
+            if (!resp.ok){
+                throw new Error("resp not okay");
+            }
+
+            resp.json()
+            .then(result => {
+                if (result.error){
+                    throw new Error(result.error_message);
+                }
+
+                if (result.auth){
+                    setLoggedIn(true);
+                }
+
+                else {
+                    throw new Error("not marked as logged in in the system");
+                }
+            })
+
+            .catch(err => {console.log("error on checking if signed in:", err)});
+        })
+        .catch(err => {
+            console.log("error on checking if signed in:", err);
+        })
     }, []);
     
     const loginHandler = (pernum) => {
         const logIn = async (pernum) => {
             try {
-                const result = await fetch('http://127.0.0.1:3001/login', {
+                const result = await fetch('/api/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

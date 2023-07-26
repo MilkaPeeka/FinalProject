@@ -19,7 +19,6 @@ const session = require('express-session');
 const LocalStrategy = require('passport-local').Strategy;
 const MongoDBStore = require('connect-mongodb-session')(session);
 const cors = require('cors');
-
 const app = express();
 const store = MongoDBStore({
   uri: "mongodb+srv://Yuval:" +process.env.DB_PASSWORD +"@cluster0.dcwwtsq.mongodb.net/ProjectDummyData",
@@ -28,27 +27,18 @@ const store = MongoDBStore({
 
 app.use(bp.urlencoded({extended: true}));
 app.use(bp.json({extended: true}));
-app.use(
-  cors({
-    origin: 'http://127.0.0.1:3000',
-    credentials: true,
-    optionsSuccessStatus: 200
-}));
-
 app.use(session({
   secret: process.env.SESS_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: {
-    sameSite: false, // this may need to be false is you are accessing from another React app
-    httpOnly: true, // this must be false if you want to access the cookie
-    secure: false,
-    maxAge: 300000000
-  },
   store
+  // cookie: {
+  //   sameSite: 'none',
+  //   secure: false,
+  // },
 }));
 // const corsOptions ={
-//   // origin:'http://127.0.0.1:3000', 
+//   origin:'http://127.0.0.1:3000', 
 //   credentials:true,            //access-control-allow-credentials:true
 //   optionSuccessStatus:200
 // }
@@ -114,7 +104,7 @@ const authenticateMiddleware = (req, res, next) => {
   }
 };
 
-app.post('/login', (req, res) => {
+app.post('/api/login', (req, res) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) {
       return res.status(500).json({ error: true, error_message: 'Internal server error ' + err.message });
@@ -133,7 +123,7 @@ app.post('/login', (req, res) => {
 })(req, res);
 });
 
-app.get('/isLoggedIn', (req, res) => {
+app.get('/api/isLoggedIn', (req, res) => {
   console.log(req.headers);
   if (req.isAuthenticated()){
     res.json({error: false, auth: true});
