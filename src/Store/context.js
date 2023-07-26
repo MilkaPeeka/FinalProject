@@ -6,17 +6,20 @@ const SiteContext = createContext({
     isManager: false,
     sessionID: null,
     pernum: null,
+    gdud: null,
     onDarkModeToggle: () => {},
     onLogOut: () => {},
-    onLogIn: () => {},
+    onLogIn: (pernum) => {},
     onAddRakam: () => {},
 });
 
 export const SiteContextProvider = (props) => {
     // on initial render we will want to fetch the state of both being logged in and dark mode
-    const [isLoggedIn, setLoggedIn] = useState(localStorage.getItem('isLoggedIn') === '1');
-    const [isInDarkMode, setDarkMode] = useState(localStorage.getItem('isDarkMode') === '1');
-
+    const [isLoggedIn, setLoggedIn] = useState(false);
+    const [isInDarkMode, setDarkMode] = useState(false);
+    const [isManager, setManager] = useState(null);
+    const [gdud, setGdud] = useState(null);
+    const [pernum, setPernum] = useState(null);
 
     // handle dark mode toggling
     const onToggle = () => {
@@ -31,26 +34,65 @@ export const SiteContextProvider = (props) => {
         localStorage.setItem('isLoggedIn', '0');
         setLoggedIn(false);
       };
+
+    useEffect(() => {
+    }, []);
     
-      const loginHandler = () => {
-        localStorage.setItem('isLoggedIn', '1');
-        setLoggedIn(true);
-      };
+    const loginHandler = (pernum) => {
+        const logIn = async (pernum) => {
+            try {
+                const result = await fetch('http://127.0.0.1:3001/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({pernum})
+                    });
+
+
+                if (!result.ok){
+                    throw new Error('Didnt get right result code');
+                }
+                const data = await result.json();
+                if (data.error){
+                    throw new Error(data.error_message);
+                }
+                console.log(data);
+                setManager(data.user.isManager);
+                setGdud(data.user.gdud);
+                setPernum(data.user.pernum);
+                setLoggedIn(true);
+            }
+
+            catch (err){
+                console.log("ERROR: ", err);
+                return;
+            }
+
+        }
+
+    logIn(pernum);
+    };
+
 
     return (
         <SiteContext.Provider
             value={{
                 isLoggedIn: isLoggedIn,
                 isInDarkMode: isInDarkMode,
-                onDarkModeToggle: onToggle,
-                onLogOut: logoutHandler,
-                onLogIn: loginHandler
+                isManager: false,
+                sessionID: null,
+                pernum: null,
+                gdud: null,
+                onDarkModeToggle: () => onToggle,
+                onLogOut: () => logoutHandler,
+                onLogIn: (pernum) => loginHandler(pernum),
+                onAddRakam: () => {},
             }}>
             {props.children}
         </SiteContext.Provider>
     );
     
-
 }
 
 export default SiteContext;

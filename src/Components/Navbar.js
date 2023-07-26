@@ -16,7 +16,6 @@ const Navbar = (props) => {
     const ctx = useContext(SiteContext);
     const isLoggedIn = ctx.isLoggedIn;
     const isInDarkMode = ctx.isInDarkMode;
-    console.log(isInDarkMode);
     const [alignment, setAlignment] = useState(isInDarkMode ? 'moon' : 'sun');
 
     const handleChange = (event, newAlignment) => {

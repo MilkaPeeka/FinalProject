@@ -18,21 +18,45 @@ const passport = require('passport');
 const session = require('express-session');
 const LocalStrategy = require('passport-local').Strategy;
 const MongoDBStore = require('connect-mongodb-session')(session);
+const cors = require('cors');
+
 const app = express();
 const store = MongoDBStore({
   uri: "mongodb+srv://Yuval:" +process.env.DB_PASSWORD +"@cluster0.dcwwtsq.mongodb.net/ProjectDummyData",
   collection: 'BarakSessions', // Collection name for storing sessions in MongoDB
-  expires: 1000 * 60 * 60 * 24, // Session expiration time (in milliseconds) - 1 day in this example
 });
+
 app.use(bp.urlencoded({extended: true}));
+app.use(bp.json({extended: true}));
+app.use(
+  cors({
+    origin: 'http://127.0.0.1:3000',
+    credentials: true,
+    optionsSuccessStatus: 200
+}));
+
 app.use(session({
   secret: process.env.SESS_SECRET,
   resave: false,
   saveUninitialized: false,
+  cookie: {
+    sameSite: false, // this may need to be false is you are accessing from another React app
+    httpOnly: true, // this must be false if you want to access the cookie
+    secure: false,
+    maxAge: 300000000
+  },
   store
 }));
+// const corsOptions ={
+//   // origin:'http://127.0.0.1:3000', 
+//   credentials:true,            //access-control-allow-credentials:true
+//   optionSuccessStatus:200
+// }
+// app.use(cors(corsOptions));
 app.use(passport.initialize());
 app.use(passport.session());
+
+
 
 const User = mongoose.model('User', mongoose.Schema({
   pernum: {type: String, unique: true},
@@ -102,17 +126,20 @@ app.post('/login', (req, res) => {
       if (err) {
         return res.status(500).json({ error_message: 'Login failed' });
       }
+
+      console.log(res.headers)
       return res.status(200).json({ error: false, message: 'Login successful', user });
     });
 })(req, res);
 });
 
-app.get('/isLoggedIn', (req, res, next) => {
+app.get('/isLoggedIn', (req, res) => {
+  console.log(req.headers);
   if (req.isAuthenticated()){
     res.json({error: false, auth: true});
   }
   else {
-    res.json({error: true, error_meesage: 'UnAuthenticated'})
+    res.json({error: false, auth: false})
   }
 });
 app.get('/logout', (req, res) => {
@@ -226,7 +253,16 @@ mongoose.connect("mongodb+srv://Yuval:" +process.env.DB_PASSWORD +"@cluster0.dcw
   console.log('connected to db successfully');
   const users = await User.find({});
   const carDatas = await carData.find({});
-  
+  createFakeDB(users, carDatas);
+  const port = 3001;
+  app.listen(port, () => console.log(`running api on port ${port}`));
+})
+.catch((err) => {
+  console.error(err.message);
+})
+
+
+const createFakeDB = (users, carDatas) =>{
   if (users.length === 0){
     // we will generate 3 users
     new User({
@@ -284,9 +320,4 @@ mongoose.connect("mongodb+srv://Yuval:" +process.env.DB_PASSWORD +"@cluster0.dcw
       gdud: 20
     }).save();
   }
-
-  app.listen(3000, () => console.log('running api on port 3000'));
-})
-.catch((err) => {
-  console.error(err.message);
-})
+}
