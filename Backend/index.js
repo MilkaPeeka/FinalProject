@@ -21,7 +21,7 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 const cors = require('cors');
 const app = express();
 const store = MongoDBStore({
-  uri: "mongodb+srv://Yuval:" +process.env.DB_PASSWORD +"@cluster0.dcwwtsq.mongodb.net/ProjectDummyData",
+  uri: process.env.LOCAL_DB,
   collection: 'BarakSessions', // Collection name for storing sessions in MongoDB
 });
 
@@ -243,7 +243,7 @@ app.post('/api/rakams/add/',authenticateMiddleware, async (req, res) => {
 
 });
 
-mongoose.connect("mongodb+srv://Yuval:" +process.env.DB_PASSWORD +"@cluster0.dcwwtsq.mongodb.net/ProjectDummyData")
+mongoose.connect(process.env.LOCAL_DB)
 .then(async () => {
   console.log('connected to db successfully');
   const users = await User.find({});

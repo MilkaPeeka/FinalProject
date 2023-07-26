@@ -6,7 +6,6 @@ import {Stack,
         Typography,
         FormControlLabel,
         Checkbox,
-        CircularProgress
     } from '@mui/material';
 
 const RakamQueryResult = (props) => {
@@ -52,6 +51,9 @@ const RakamQueryResult = (props) => {
         <>
             <Typography variant='h4' color={'white'} mt={5}>רקמ נמצא בגדוד!</Typography>
             <Typography>נוסיף לוגו שיראה כמה שמישים, באחוזים וכמותי</Typography>
+            <Typography>מקט: {makat}</Typography>
+            <Typography>כמות: {total}</Typography>
+            <Typography>שמישים: {totalOperating}</Typography>
         </>
     );
 

@@ -4,24 +4,24 @@ import RakamQueryResult from "./RakamQueryResult";
 import { useEffect, useContext, useState } from "react";
 import SiteContext from "../Store/context";
 // should the rakams be stored in a rakams list that is fetched once we load the page or should we fetch it everytime?
-const AddRakamPage = (props) => {
+// needs refactoring all around - for example, all useStates should be declared here and perhaps even switch to useReducer
+const AddRakamPage = () => {
     const defaultRakamData = {
         found: false, 
         makat: '',
-        total: '',
-        totalOperating: '',
+        total: 0,
+        totalOperating: 0,
     };
     const ctx = useContext(SiteContext);
-    const gdud = ctx.userData.gdud;
     const [rakamList, setRakamList] = useState([]);
     const [foundRakamData, setFoundRakamData] = useState(defaultRakamData);
     const [acceptAddingNewRakam, setAcceptAddingNewRakam] = useState(false);
 
     useEffect(() => {
-        if (gdud === '')
+        if (ctx.userData.gdud === '')
             return
 
-        fetch(`/api/rakams/get_by_gdud/${gdud}/`, {
+        fetch(`/api/rakams/get_by_gdud/${ctx.userData.gdud}/`, {
             method: 'GET',
             credentials: 'include' // Include credentials to send cookies along with the request
           })
@@ -42,7 +42,7 @@ const AddRakamPage = (props) => {
               // Handle errors
               console.error('Error:', error);
             });    
-        }, [gdud]);
+        }, [ctx.userData.gdud]);
 
 
     const onMakat = (makat) => {
@@ -68,11 +68,11 @@ const AddRakamPage = (props) => {
         setAcceptAddingNewRakam(oldChoice => !oldChoice);
     }
 
-    if (ctx.isLoggedIn)
+    if (ctx.userData.isManager)
         return (
             <Stack direction={"row"} maxWidth={true}>
 
-                <AddRakamForm onMakatChange={onMakat} gdud={gdud} onValidSubmit={submitHandler}/>
+                <AddRakamForm onMakatChange={onMakat} gdud={ctx.userData.gdud} onValidSubmit={submitHandler} data={foundRakamData} wasApproved={acceptAddingNewRakam}/>
                 <RakamQueryResult data={foundRakamData} onAcceptNewRakam={onAcceptNewRakam}/>
             
             </Stack>
