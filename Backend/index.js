@@ -117,31 +117,38 @@ app.post('/api/login', (req, res) => {
         return res.status(500).json({ error_message: 'Login failed' });
       }
 
-      console.log(res.headers)
       return res.status(200).json({ error: false, message: 'Login successful', user });
     });
 })(req, res);
 });
 
 app.get('/api/isLoggedIn', (req, res) => {
-  console.log(req.headers);
   if (req.isAuthenticated()){
-    res.json({error: false, auth: true});
+    res.json({error: false, user: req.user});
   }
   else {
-    res.json({error: false, auth: false})
+    res.json({error: false, user: null})
   }
 });
-app.get('/logout', (req, res) => {
+app.get('/api/logout', (req, res) => {
   // Call req.logout() to log out the current user
   req.logout((err) => {
-    if (err){
-      return res.json({error: true, error_message: "Logout failed " + err.message})
+    if (err) {
+      return res.json({ error: true, error_message: "Logout failed " + err.message });
     }
 
-    return res.json({error: false, result: "log out success!"})
-  });
+    // Destroy the session on the server-side
+    req.session.destroy((err) => {
+      if (err) {
+        return res.json({ error: true, error_message: "Logout failed " + err.message });
+      }
 
+      // Clear the session cookie on the client-side
+      res.clearCookie('connect.sid');
+
+      return res.json({ error: false, result: "Logout success!" });
+    });
+  });
 });
 
 // const main = async () => {

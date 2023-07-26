@@ -17,8 +17,6 @@ const SignInForm = () => {
         ctx.onLogIn(pernumValue);
     };
 
-    console.log("is logged in: ", ctx.isLoggedIn);
-
     if (!ctx.isLoggedIn)
         return (
             <Card onSubmit={submitHandler} component={'form'} variant="outlined" sx={{

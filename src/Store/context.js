@@ -4,7 +4,6 @@ const SiteContext = createContext({
     isLoggedIn: false,
     isInDarkMode: false,
     isManager: false,
-    sessionID: null,
     pernum: null,
     gdud: null,
     onDarkModeToggle: () => {},
@@ -21,6 +20,7 @@ export const SiteContextProvider = (props) => {
     const [gdud, setGdud] = useState(null);
     const [pernum, setPernum] = useState(null);
 
+    console.log('user data: ', pernum, gdud, isManager);
     // handle dark mode toggling
     const onToggle = () => {
         setDarkMode((prevState) => {
@@ -48,7 +48,10 @@ export const SiteContextProvider = (props) => {
                     throw new Error(result.error_message);
                 }
 
-                if (result.auth){
+                if (result.user){
+                    setManager(result.user.isManager);
+                    setGdud(result.user.gdud);
+                    setPernum(result.user.pernum);
                     setLoggedIn(true);
                 }
 
@@ -106,8 +109,7 @@ export const SiteContextProvider = (props) => {
             value={{
                 isLoggedIn: isLoggedIn,
                 isInDarkMode: isInDarkMode,
-                isManager: false,
-                sessionID: null,
+                isManager: isManager,
                 pernum: null,
                 gdud: null,
                 onDarkModeToggle: () => onToggle,
