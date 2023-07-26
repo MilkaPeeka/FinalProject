@@ -86,15 +86,14 @@ const authenticateMiddleware = (req, res, next) => {
     // If the user is authenticated, continue to the next middleware or route handler
     return next();
   } else {
-    // If the user is not authenticated, respond with a 401 Unauthorized status
-    return res.status(401).json({ error: true, error_message: 'UnAuthenticated' });
+    return res.status(401).json({ error: true, error_message: 'Unauthenticated' });
   }
 };
 
-app.post('/login', (req, res, next) => {
+app.post('/login', (req, res) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) {
-      return res.status(500).json({ error: true, error_message: 'Internal server error' });
+      return res.status(500).json({ error: true, error_message: 'Internal server error ' + err.message });
     }
     if (!user) {
       return res.status(401).json({ error: true, error_message: 'Invalid credentials' });
@@ -105,7 +104,7 @@ app.post('/login', (req, res, next) => {
       }
       return res.status(200).json({ error: false, message: 'Login successful', user });
     });
-  })(req, res, next);
+})(req, res);
 });
 
 app.get('/isLoggedIn', (req, res, next) => {
@@ -116,7 +115,17 @@ app.get('/isLoggedIn', (req, res, next) => {
     res.json({error: true, error_meesage: 'UnAuthenticated'})
   }
 });
+app.get('/logout', (req, res) => {
+  // Call req.logout() to log out the current user
+  req.logout((err) => {
+    if (err){
+      return res.json({error: true, error_message: "Logout failed " + err.message})
+    }
 
+    return res.json({error: false, result: "log out success!"})
+  });
+
+});
 
 // const main = async () => {
 //     try {
