@@ -30,6 +30,10 @@ export const SiteContextProvider = (props) => {
     const [serverError, setServerError] = useState('');
 
     useEffect(() => {
+        setDarkMode(localStorage.getItem('isDarkMode') === '1');
+    }, []);
+
+    useEffect(() => {
         setIsLoading(true);
         fetch('/api/isLoggedIn', {credentials: "include",})
         .then(resp => {
