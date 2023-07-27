@@ -82,15 +82,12 @@ const CustomGraph = (props) => {
     const borderColor = [];
 
     props.items.forEach((item) => {
-        console.log(item);
         labels.push(item.label);
         values.push(item.value);
         backgroundColor.push(matchColorToPrecentage(+item.value, 0.5))
         borderColor.push(matchColorToPrecentage(+item.value, 1))
     });
-    
-    console.log(labels, values, backgroundColor, borderColor);
-            
+                
     const data = {
         labels,
         datasets: [

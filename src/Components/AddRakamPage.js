@@ -5,6 +5,7 @@ import { useEffect, useContext, useState } from "react";
 import SiteContext from "../Store/context";
 // should the rakams be stored in a rakams list that is fetched once we load the page or should we fetch it everytime?
 // needs refactoring all around - for example, all useStates should be declared here and perhaps even switch to useReducer
+// sync between clearing text and checkboxes and the loading animation
 const AddRakamPage = () => {
     const defaultRakamData = {
         found: false, 
@@ -16,10 +17,13 @@ const AddRakamPage = () => {
     const [rakamList, setRakamList] = useState([]);
     const [foundRakamData, setFoundRakamData] = useState(defaultRakamData);
     const [acceptAddingNewRakam, setAcceptAddingNewRakam] = useState(false);
+    const [isLoading, setLoading] = useState(false);
 
     useEffect(() => {
         if (ctx.userData.gdud === '')
             return
+
+        console.log('rakam list updated');
 
         fetch(`/api/rakams/get_by_gdud/${ctx.userData.gdud}/`, {
             method: 'GET',
@@ -42,7 +46,7 @@ const AddRakamPage = () => {
               // Handle errors
               console.error('Error:', error);
             });    
-        }, [ctx.userData.gdud]);
+        }, [ctx.userData.gdud, isLoading]);
 
 
     const onMakat = (makat) => {
@@ -61,7 +65,37 @@ const AddRakamPage = () => {
 
 
     const submitHandler = (rakamDetails) => {
+      setAcceptAddingNewRakam(false);
+      console.log(rakamDetails);
+      setLoading(true);
+      fetch("/api/rakams/add/", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(rakamDetails)})
 
+      .then(result => {
+        if (!result.ok){
+          throw new Error("error in server - couldnt load page");
+        }
+
+        result.json()
+        .then(result => {
+          setLoading(false);
+          if (result.err){
+            throw new Error(result.err.error_message);
+          }
+
+          else {
+            console.log("added successfully");
+          }
+
+        })
+        .catch(err => console.log("error: " +err));
+      })
+      .catch(err => console.log("error: " +err));
     };
 
     const onAcceptNewRakam = () => {
@@ -71,9 +105,8 @@ const AddRakamPage = () => {
     if (ctx.userData.isManager)
         return (
             <Stack direction={"row"} maxWidth={true}>
-
                 <AddRakamForm onMakatChange={onMakat} gdud={ctx.userData.gdud} onValidSubmit={submitHandler} data={foundRakamData} wasApproved={acceptAddingNewRakam}/>
-                <RakamQueryResult data={foundRakamData} onAcceptNewRakam={onAcceptNewRakam}/>
+                <RakamQueryResult data={foundRakamData} newRakamState={{acceptAddingNewRakam, onAcceptNewRakam}}/>
             
             </Stack>
     );

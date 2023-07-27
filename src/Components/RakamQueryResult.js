@@ -33,7 +33,7 @@ const RakamQueryResult = (props) => {
     };
 
     const changeHandler = () => {
-        props.onAcceptNewRakam();
+        props.newRakamState.onAcceptNewRakam();
     }
 
     const notFoundHTML = (
@@ -41,7 +41,7 @@ const RakamQueryResult = (props) => {
             <Typography variant='h4' color={'white'} mt={5}>רקמ לא נמצא בגדוד!</Typography>
             <Typography color={'white'} fontWeight={'bold'}>שים לב שהקלדת את המקט הנכון!</Typography>
             <Typography color={'white'} >במידה והינך רוצה להכניס רקמ מסוג חדש למערכת, אנא לחץ על הכפתור למטה ותאשר שברצונך לעשות זאת.</Typography>
-            <FormControlLabel control={<Checkbox  color="success" onChange={changeHandler}/>} label="ווידאתי שהכנסתי נתונים נכונים וברצוני להוסיף רקמ חדש לגדוד"
+            <FormControlLabel control={<Checkbox  color="success" onChange={changeHandler} checked={props.newRakamState.acceptAddingNewRakam}/>} label="ווידאתי שהכנסתי נתונים נכונים וברצוני להוסיף רקמ חדש לגדוד"
             sx={failedQueryCheckboxStyle}/> 
         </>
     );

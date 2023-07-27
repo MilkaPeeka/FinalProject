@@ -5,6 +5,8 @@ import rtlPlugin from 'stylis-plugin-rtl';
 import { prefixer } from 'stylis';
 import { useContext } from 'react';
 import SiteContext from './Store/context';
+
+
 const ThemeWrapper = (props) => {
     const ctx = useContext(SiteContext);
     const theme = createTheme({

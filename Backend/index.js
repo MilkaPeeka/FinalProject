@@ -21,7 +21,7 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 const cors = require('cors');
 const app = express();
 const store = MongoDBStore({
-  uri: process.env.LOCAL_DB,
+  uri: process.env.REMOTE_DB,
   collection: 'BarakSessions', // Collection name for storing sessions in MongoDB
 });
 
@@ -243,76 +243,14 @@ app.post('/api/rakams/add/',authenticateMiddleware, async (req, res) => {
 
 });
 
-mongoose.connect(process.env.LOCAL_DB)
+mongoose.connect(process.env.REMOTE_DB)
 .then(async () => {
   console.log('connected to db successfully');
   const users = await User.find({});
   const carDatas = await carData.find({});
-  createFakeDB(users, carDatas);
   const port = 3001;
   app.listen(port, () => console.log(`running api on port ${port}`));
 })
 .catch((err) => {
   console.error(err.message);
-})
-
-
-const createFakeDB = (users, carDatas) =>{
-  if (users.length === 0){
-    // we will generate 3 users
-    new User({
-      pernum: 9901,
-      gdud: 19,
-      isManager: false
-    }).save();
-  
-    new User({
-      pernum: 2162,
-      gdud: 19,
-      isManager: true
-    }).save();
-  
-    new User({
-      pernum: 6517,
-      gdud: 20,
-      isManager: true
-    }).save();
-  }
-  
-  if (carDatas.length === 0){
-    new carData({
-      carNumber: 1992313,
-      makat: 80,
-      kshirot: true,
-      gdud: 19
-    }).save();
-  
-    new carData({
-      carNumber: 3243,
-      makat: 801,
-      kshirot: false,
-      gdud: 19
-    }).save();
-  
-    new carData({
-      carNumber: 1777313,
-      makat: 80,
-      kshirot: true,
-      gdud: 19
-    }).save();
-  
-    new carData({
-      carNumber: 1232,
-      makat: 801,
-      kshirot: false,
-      gdud: 20
-    }).save();
-  
-    new carData({
-      carNumber: 100013,
-      makat: 12,
-      kshirot: true,
-      gdud: 20
-    }).save();
-  }
-}
+});

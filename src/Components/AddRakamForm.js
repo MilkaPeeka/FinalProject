@@ -1,11 +1,13 @@
 import { 
     FormGroup,
     FormLabel,
+    FormControlLabel,
+    Checkbox,
     Button, 
     TextField, 
     Card,
     } from "@mui/material";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useInput from "../use-input";
 /*
 NEED TO RESET FORM WHEN LOGGING OUT,
@@ -13,17 +15,26 @@ NEED TO RESET FORM WHEN LOGGING OUT,
     const AddRakamForm = (props) => {
         const makatInputField = useInput(value => value.trim().length !== 0 && /^\d+$/.test(value))
         const serialNumInputField = useInput(value => value.trim().length !== 0 && /^\d+$/.test(value))
-
-        const {value : makatValue} = makatInputField;
+        const [kshirot, setKshirot] = useState(false);
         const {onMakatChange} = props;
-        
-        useEffect(() => onMakatChange(makatValue), [makatInputField.isValid]);
+        useEffect(() => onMakatChange(makatInputField.value), [onMakatChange, makatInputField.value]);
 
         const submitHandler = (event) =>{
             event.preventDefault();
-        };
+            if (!(makatInputField.isValid && serialNumInputField.isValid) && (props.wasApproved || props.data.isFound))
+                return;
 
-        console.log(makatInputField);
+            const newRakamData = {
+                gdud: props.gdud,
+                makat: makatInputField.value,
+                carNumber: serialNumInputField.value,
+                kshirot: kshirot
+            };
+            props.onValidSubmit(newRakamData);
+            makatInputField.reset();
+            serialNumInputField.reset();
+            setKshirot(false);
+        };
 
         return (
             /*
@@ -45,18 +56,20 @@ NEED TO RESET FORM WHEN LOGGING OUT,
 
                 <FormGroup mb={3}>
                     <FormLabel mb={1}>הכנס מקט רקמ</FormLabel>
-                    <TextField variant="outlined" label="מקט רקמ" onChange={makatInputField.valueChangeHandler} onBlur={makatInputField.inputBlurHandler} value={makatValue} error={makatInputField.hasError}/>
+                    <TextField variant="outlined" label="מקט רקמ" onChange={makatInputField.valueChangeHandler} onBlur={makatInputField.inputBlurHandler} value={makatInputField.value} error={makatInputField.hasError}/>
                     {makatInputField.hasError && <FormLabel error mb={1}>מקט חייב להכיל רק ספרות</FormLabel>}
-
                 </FormGroup>
 
                 <FormGroup mb={3}>
                     <FormLabel mb={1}>הכנס מספר ייחודי של רקמ</FormLabel>
-                    <TextField variant="outlined" label="מספר ייחודי" onChange={serialNumInputField.valueChangeHandler} onBlur={serialNumInputField.inputBlurHandler} error={serialNumInputField.hasError}/>
+                    <TextField variant="outlined" label="מספר ייחודי" onChange={serialNumInputField.valueChangeHandler} onBlur={serialNumInputField.inputBlurHandler} error={serialNumInputField.hasError} value={serialNumInputField.value}/>
                     {serialNumInputField.hasError && <FormLabel error mb={1}>מספר ייחודי חייב להכיל רק ספרות</FormLabel>}
-
                 </FormGroup>
-                <Button variant="contained" type="submit">הוסף רקמ למערכת!</Button>
+
+                <FormGroup>
+                    <FormControlLabel control={<Checkbox onChange={() => setKshirot(prevState => !prevState)} checked={kshirot}/>} label="הכלי כשיר" />
+                </FormGroup>
+                <Button variant="contained" type="submit" disabled={!props.data.found && !props.wasApproved}>הוסף רקמ למערכת!</Button>
             </Card>  
 
         );
