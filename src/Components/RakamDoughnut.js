@@ -63,26 +63,26 @@ const RakamDoughnut = (props)=> {
       ctx.restore();
       // var fontSize = (height / 160).toFixed(2);
       // ctx.font = fontSize +" rem " + theme.typography.fontFamily;
-      ctx.font = (height / 180).toFixed(2) + "em" + theme.typography.fontFamily;
+      ctx.font = "bold " + (height / 160).toFixed(2) + "em" + theme.typography.fontFamily;
       ctx.fillStyle = textColor;
-      ctx.textBaseline = "top";
+      ctx.textBaseline = "bottom";
       var topLabel = `%${Math.round(100 * props.valid / (props.valid + props.invalid))}`;
       var topLabelX = Math.round((width - ctx.measureText(topLabel).width) / 2);
-      var topLabelY = height * 0.42; // Adjust the height position for the top label
+      var topLabelY = height * 0.57; // Adjust the height position for the top label
       
       ctx.fillText(topLabel, topLabelX, topLabelY);
 
-      ctx.font = (height / 240).toFixed(2) +"em" + theme.typography.fontFamily;
+      ctx.font = (height / 220).toFixed(2) +"em" + theme.typography.fontFamily;
       ctx.fillStyle = textColor;
       var bottomLabel = `${props.valid} כשירים`;
       var bottomLabelX = Math.round((width - ctx.measureText(bottomLabel).width) / 2);
-      var bottomLabelY = height * 0.56; // Adjust the height position for the bottom label
+      var bottomLabelY = height * 0.66; // Adjust the height position for the bottom label
       ctx.fillText(bottomLabel, bottomLabelX, bottomLabelY);
 
-      ctx.font = (height / 300).toFixed(2) +"em" + theme.typography.fontFamily;
+      ctx.font = (height / 270).toFixed(2) +"em" + theme.typography.fontFamily;
       var bottomLabel = `מתוך ${props.valid + props.invalid}`;
       var bottomLabelX = Math.round((width - ctx.measureText(bottomLabel).width) / 2);
-      var bottomLabelY = height * 0.62; // Adjust the height position for the bottom label
+      var bottomLabelY = height * 0.71; // Adjust the height position for the bottom label
       ctx.fillText(bottomLabel, bottomLabelX, bottomLabelY);
 
       ctx.save();

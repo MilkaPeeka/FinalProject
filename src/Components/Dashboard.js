@@ -7,7 +7,6 @@ import { Box } from "@mui/system";
 const Dashboard = () => {
     const ctx = useContext(SiteContext);
     const [rakamList, setRakamList] = useState([]);
-    console.log(ctx.isInDarkMode);
     useEffect(() => {
         fetch(`/api/rakams/get_by_gdud/${ctx.userData.gdud}/`, {
             method: 'GET',
