@@ -7,8 +7,8 @@ const RakamCard = (props) => {
         <Box sx={{
             borderRadius: 5,
             boxShadow: 3,
-            margin: 2,
-            padding: 2,
+            margin: 3,
+            paddingY: 1.5,
             display: "flex",
             flexDirection: "column",
             justifyContent: "center"

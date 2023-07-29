@@ -53,7 +53,7 @@ const SignInForm = () => {
                 }}>
                 
                 
-                    <Typography variant="h4">ברוך הבא לבזק בקטן! אנא היכנס למערכת</Typography>
+                    <Typography variant="h4">ברוך הבא לבזכ בקטן! אנא היכנס למערכת</Typography>
                 
                     <FormGroup sx= {{
                         marginBottom: 3
