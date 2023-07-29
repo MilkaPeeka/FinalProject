@@ -1,6 +1,5 @@
-import style from './Graph.module.css'
-
 import React from 'react';
+import { Box } from '@mui/material';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -65,17 +64,6 @@ const matchColorToPrecentage = (percentage, a = 1) => {
   };
   
 const CustomGraph = (props) => {
-    const options = {
-        responsive: true,
-        plugins: {
-          title: {
-            display: true,
-            text: 'טנקים לא תקולים',
-          },
-        },
-      };
-
-
     const labels = [];
     const values = [];
     const backgroundColor = [];
@@ -95,16 +83,20 @@ const CustomGraph = (props) => {
           data: values,
           backgroundColor: backgroundColor,
           borderColor: borderColor,
-          borderWidth: 1
+          borderWidth: 2
         },
         ],
     };
     
-  
+
     return (
-        <div>
-            <Bar options={options} data={data} className={style.graph}/>
-        </div>
+      <Box
+      sx={{
+        width: '70%', 
+        display: 'block'
+      }}>
+        <Bar data={data} options={{animations: false, plugins: {legend: {display: false}}}}/>
+      </Box>
     );
 }
 

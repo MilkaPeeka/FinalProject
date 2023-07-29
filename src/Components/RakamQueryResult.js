@@ -25,7 +25,7 @@ const RakamQueryResult = (props) => {
     };
 
     const failedQueryCheckboxStyle = {
-        bgcolor: 'white', // White background
+        bgcolor: 'background.default', // White background
         borderRadius: 10,
         width: '80%',
         padding: 1,
@@ -38,7 +38,7 @@ const RakamQueryResult = (props) => {
 
     const notFoundHTML = (
         <>
-            <Typography variant='h4' color={'white'} mt={5}>רקמ לא נמצא בגדוד!</Typography>
+            <Typography variant='h4' color='background.default' mt={5}>רקמ לא נמצא בגדוד!</Typography>
             <Typography color={'white'} fontWeight={'bold'}>שים לב שהקלדת את המקט הנכון!</Typography>
             <Typography color={'white'} >במידה והינך רוצה להכניס רקמ מסוג חדש למערכת, אנא לחץ על הכפתור למטה ותאשר שברצונך לעשות זאת.</Typography>
             <FormControlLabel control={<Checkbox  color="success" onChange={changeHandler} checked={props.newRakamState.acceptAddingNewRakam}/>} label="ווידאתי שהכנסתי נתונים נכונים וברצוני להוסיף רקמ חדש לגדוד"
@@ -49,7 +49,7 @@ const RakamQueryResult = (props) => {
 
     const foundHTML = (
         <>
-            <Typography variant='h4' color={'white'} mt={5}>רקמ נמצא בגדוד!</Typography>
+            <Typography variant='h4' color='background.default' mt={5}>רקמ נמצא בגדוד!</Typography>
             <Typography>נוסיף לוגו שיראה כמה שמישים, באחוזים וכמותי</Typography>
             <Typography>מקט: {makat}</Typography>
             <Typography>כמות: {total}</Typography>

@@ -1,12 +1,13 @@
 import { useContext, useState, useEffect, useMemo } from "react";
 import SiteContext from "../Store/context";
-import RakamCard from "./RakamCard";
-import { Box, FormControl, TextField, Typography} from "@mui/material";
+
+import Graph from './Graph'
+import RakamCardGroup from "./RakamCardGroup";
+import { Typography } from "@mui/material";
 
 const Dashboard = () => {
     const ctx = useContext(SiteContext);
     const [rakamList, setRakamList] = useState([]);
-    const [rakamQuery, setRakamQuery] = useState('');
     useEffect(() => {
       if (ctx.userData.gdud === '')
         return;
@@ -30,78 +31,47 @@ const Dashboard = () => {
     
     }, [ctx.userData.gdud]);
 
+    
     const groupedByMakat = rakamList.reduce((result, rakam) => {
-        const { makat, ...rest } = rakam;
-        if (!result[makat]) {
-          result[makat] = { valid: 0, invalid: 0, rakams: [] };
-        }
-      
-        if (rakam.kshirot) {
-          result[makat].valid++;
-        } else {
-          result[makat].invalid++;
-        }
-      
-        result[makat].rakams.push(rest);
-        return result;
-      }, {});
-      
-    const groupedRakamsList =  useMemo(() => {
-      return Object.entries(groupedByMakat).map(([makat, { valid, invalid, rakams }]) => {
-      return { makat, valid, invalid, rakams };
-      })}, [rakamList]);
+      const { makat, ...rest } = rakam;
+      if (!result[makat]) {
+        result[makat] = { valid: 0, invalid: 0, rakams: [] };
+      }
+    
+      if (rakam.kshirot) {
+        result[makat].valid++;
+      } else {
+        result[makat].invalid++;
+      }
+    
+      result[makat].rakams.push(rest);
+      return result;
+    }, {});
+    
 
-    const handleChange = (event) => {
-      setRakamQuery(event.target.value);
-    };
+  // a const that holds the value of {valid, invalid, makat} for all the rakams in a gdud
+  const groupedRakamsList =  useMemo(() => {
+    return Object.entries(groupedByMakat).map(([makat, { valid, invalid, rakams }]) => {
+    return { makat, valid, invalid, rakams };
+    })}, [rakamList]);
 
+    const values = [];
 
-    let toShow;
-    if (rakamQuery !== '')
-      toShow = groupedRakamsList.filter(item => item.makat.startsWith(rakamQuery));
-    else
-      toShow = groupedRakamsList;
+    groupedRakamsList.forEach(item => {
+      values.push({
+        label: item.makat,
+        value: Math.round(100 * item.valid / (item.valid + item.invalid))
+      });
+    });
+
     return (
-        <Box sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: "hidden",
-            height: 800,
-            overflowY: 'scroll',
-            overflowX: 'hidden',
-            alignItems: 'center',
-        }}>
-        <Box sx={{display: 'flex',
-                      justifyContent: 'space-between',
-                      flexWrap: 1,
-                      mt: 3,
-                      bgcolor: 'error.main',
-                      width:'100%',
-                      borderTop: 1,
-                      borderTopLeftRadius: 16,
-                      borderTopRightRadius: 16
-                      }}>
-        <Typography variant="h5">חיפוש כלי בגדוד:</Typography>
-        <FormControl width={300} sx={{
-          m: 2
-        }}>
-        <TextField
-          type="search"
-          label="חיפוש לפי מקט"
-          variant="standard"
-          onChange={handleChange} // Add the onChange event here
-        />        
-        </FormControl>
-          </Box>
-            <Box sx={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          flexWrap: "wrap",
-                          justifyContent: "center"}}>
-              {toShow.map(item => <RakamCard  {...item} key={item.makat}/>)}
-            </Box>
-      </Box>
+      <>
+        <Typography textAlign="center" variant="h4">מצב הרקמים בגדוד {ctx.userData.gdud}</Typography>
+         <Graph items={values}/>
+         <RakamCardGroup rakamList = {rakamList}/>
+      </>
     );
+    
 };
 
 export default Dashboard;

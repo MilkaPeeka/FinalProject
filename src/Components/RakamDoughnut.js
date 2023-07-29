@@ -97,7 +97,7 @@ const RakamDoughnut = (props)=> {
       width: props.width,
       height: props.height
     }}>
-      <Doughnut data={data} plugins={plugins}/>
+      <Doughnut data={data} plugins={plugins} options={{animations: false ,events: []}}/>
     </Box>
     );
 }

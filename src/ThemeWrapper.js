@@ -4,6 +4,7 @@ import { CacheProvider } from '@emotion/react';
 import rtlPlugin from 'stylis-plugin-rtl';
 import { prefixer } from 'stylis';
 import { useContext } from 'react';
+import { CssBaseline } from '@mui/material';
 import SiteContext from './Store/context';
 
 
@@ -23,6 +24,7 @@ const ThemeWrapper = (props) => {
     return (
         <CacheProvider value={cacheRtl}>
             <ThemeProvider theme={theme}>
+                <CssBaseline />
                 {props.children}
             </ThemeProvider>
         </CacheProvider>
