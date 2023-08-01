@@ -31,18 +31,10 @@ app.use(session({
   secret: process.env.SESS_SECRET,
   resave: false,
   saveUninitialized: false,
+  cookie: {maxAge: 86400000}, // 1 day in milliseconds
   store
-  // cookie: {
-  //   sameSite: 'none',
-  //   secure: false,
-  // },
 }));
-// const corsOptions ={
-//   origin:'http://127.0.0.1:3000', 
-//   credentials:true,            //access-control-allow-credentials:true
-//   optionSuccessStatus:200
-// }
-// app.use(cors(corsOptions));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -100,7 +92,7 @@ const authenticateMiddleware = (req, res, next) => {
     // If the user is authenticated, continue to the next middleware or route handler
     return next();
   } else {
-    return res.status(401).json({ error: true, error_message: 'Unauthenticated' });
+    return res.json({ error: true, error_message: 'משתמש לא מאומת' });
   }
 };
 
@@ -110,14 +102,14 @@ app.post('/api/login', (req, res) => {
       return res.status(500).json({ error: true, error_message: 'Internal server error ' + err.message });
     }
     if (!user) {
-      return res.status(401).json({ error: true, error_message: 'Invalid credentials' });
+      return res.json({ error: true, error_message: 'משתמש הכניס מזהה לא נכון' });
     }
     req.logIn(user, (err) => {
       if (err) {
         return res.status(500).json({ error_message: 'Login failed' });
       }
 
-      return res.status(200).json({ error: false, message: 'Login successful', user });
+      return res.status(200).json({ error: false, message: 'Login successful', user, sessionExpiry: new Date(new Date().getTime() + 24 * 60 * 60 * 1000)});
     });
 })(req, res);
 });
@@ -167,29 +159,28 @@ app.get('/api/logout', (req, res) => {
 //     mongoose.connection.close();
 //   });
 
-app.get('/api/rakams/get_by_gdud_and_makat/:gdud/:makat',authenticateMiddleware, async (req, res) => {
-  const makat = req.params.makat;
-  const gdud = req.params.gdud;
+// app.get('/api/rakams/get_by_gdud_and_makat/:gdud/:makat',authenticateMiddleware, async (req, res) => {
+//   const makat = req.params.makat;
+//   const gdud = req.params.gdud;
+//   try {
+//     const queryResult = await carData.find({
+//       makat: makat,
+//       gdud: gdud
+//     });
+
+//     res.json({error: false,  results: queryResult});
+//   }
+
+//   catch (error) {
+//     res.json({error: true, error_msg: error.message});
+//   }
+
+// });
+
+app.get('/api/rekems/get_by_gdud/',authenticateMiddleware, async (req, res) => {
   try {
     const queryResult = await carData.find({
-      makat: makat,
-      gdud: gdud
-    });
-
-    res.json({error: false,  results: queryResult});
-  }
-
-  catch (error) {
-    res.json({error: true, error_msg: error.message});
-  }
-
-});
-
-app.get('/api/rakams/get_by_gdud/:gdud',authenticateMiddleware, async (req, res) => {
-  const gdud = req.params.gdud;
-  try {
-    const queryResult = await carData.find({
-      gdud: gdud
+      gdud: req.user.gdud
     });
 
     res.json({error: false, results: queryResult});
@@ -202,29 +193,29 @@ app.get('/api/rakams/get_by_gdud/:gdud',authenticateMiddleware, async (req, res)
 });
 
 
-app.get('/api/users/get_by_pernum/:pernum',authenticateMiddleware, async (req,res) => {
-  const pernum = req.params.pernum;
+// app.get('/api/users/get_by_pernum/:pernum',authenticateMiddleware, async (req,res) => {
+//   const pernum = req.params.pernum;
 
-  try {
-    const queryResult = await User.find({pernum: pernum});
-    res.json({error: false,  results: queryResult});
-  }
+//   try {
+//     const queryResult = await User.find({pernum: pernum});
+//     res.json({error: false,  results: queryResult});
+//   }
 
-  catch (error) {
-    res.json({error: true, error_msg: error.message});
-  }
+//   catch (error) {
+//     res.json({error: true, error_msg: error.message});
+//   }
 
-});
+// });
 
 
-app.post('/api/rakams/add/',authenticateMiddleware, async (req, res) => {
+app.post('/api/rekems/add/',authenticateMiddleware, async (req, res) => {
   if (!req.user.isManager){
     res.json({error: true, error_message: 'Unauthorized to add new rakams'});
     return;
   }
-  const { carNumber, makat, kshirot, gdud } = req.body;
-
-  if (!carNumber || !makat || kshirot === undefined || !gdud) 
+  const { carNumber, makat, kshirot} = req.body;
+  console.log(req.body)
+  if (!carNumber || !makat || kshirot === undefined) 
     res.json({error: true, error_message: 'One or more fields are invalid'});
 
   else {
@@ -232,7 +223,7 @@ app.post('/api/rakams/add/',authenticateMiddleware, async (req, res) => {
         carNumber,
         makat,
         kshirot,
-        gdud,
+        gdud: req.user.gdud,
       });
 
       newlyAdded.save()
