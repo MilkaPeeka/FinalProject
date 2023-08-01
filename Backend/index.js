@@ -177,7 +177,7 @@ app.get('/api/logout', (req, res) => {
 
 // });
 
-app.get('/api/rekems/get_by_gdud/',authenticateMiddleware, async (req, res) => {
+app.get('/api/rakams/get_by_gdud/',authenticateMiddleware, async (req, res) => {
   try {
     const queryResult = await carData.find({
       gdud: req.user.gdud
@@ -208,7 +208,7 @@ app.get('/api/rekems/get_by_gdud/',authenticateMiddleware, async (req, res) => {
 // });
 
 
-app.post('/api/rekems/add/',authenticateMiddleware, async (req, res) => {
+app.post('/api/rakams/add/',authenticateMiddleware, async (req, res) => {
   if (!req.user.isManager){
     res.json({error: true, error_message: 'Unauthorized to add new rakams'});
     return;
@@ -239,7 +239,7 @@ mongoose.connect(process.env.REMOTE_DB)
   console.log('connected to db successfully');
   const users = await User.find({});
   const carDatas = await carData.find({});
-  const port = 3001;
+  const port = 3002;
   app.listen(port, () => console.log(`running api on port ${port}`));
 })
 .catch((err) => {

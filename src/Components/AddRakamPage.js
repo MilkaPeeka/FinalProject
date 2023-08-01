@@ -25,7 +25,7 @@ const AddRakamPage = () => {
 
         console.log('rakam list updated');
 
-        fetch(`/api/rakams/get_by_gdud/${ctx.userData.gdud}/`, {
+        fetch(`/api/rakams/get_by_gdud/`, {
             method: 'GET',
             credentials: 'include' // Include credentials to send cookies along with the request
           })

@@ -11,7 +11,7 @@ const Dashboard = () => {
     useEffect(() => {
       if (ctx.userData.gdud === '')
         return;
-      fetch(`/api/rakams/get_by_gdud/${ctx.userData.gdud}/`, {
+      fetch(`/api/rakams/get_by_gdud/`, {
             method: 'GET',
             credentials: 'include'})
         .then((response) => {
